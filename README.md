@@ -14,7 +14,7 @@ NULL-byte (if no BOM) is detected.
 
 ## Usage
 
-``` rust
+```rust
 use content_inspector::{ContentType, inspect};
 
 assert_eq!(ContentType::UTF_8, inspect(b"Hello"));
@@ -26,7 +26,7 @@ assert!(inspect(b"Hello").is_text());
 ## CLI example
 
 This crate also comes with a small example command-line program (see [`examples/inspect.rs`](examples/inspect.rs)) that demonstrates the usage:
-```
+```bash
 > inspect
 USAGE: inspect FILE [FILE...]
 
@@ -42,7 +42,6 @@ testdata/text_UTF-32BE-BOM.txt: UTF-32BE
 testdata/text_UTF-32LE-BOM.txt: UTF-32LE
 testdata/text_UTF-8-BOM.txt: UTF-8-BOM
 testdata/text_UTF-8.txt: UTF-8
-> 
 ```
 
 If you only want to detect whether something is a binary or text file, this is about a factor of 250 faster than `file --mime ...`.
