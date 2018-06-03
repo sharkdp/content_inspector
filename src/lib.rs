@@ -1,8 +1,12 @@
-/// A simple library for fast inspection of binary buffers to guess/determine the encoding. This is
-/// mainly intended to quickly determine whether a given buffer contains "binary" or "text" data.
-/// The analysis is based on a very simple heuristic (searching for NULL bytes) and the detection
-/// of [byte order marks](https://en.wikipedia.org/wiki/Byte_order_mark). Note that this analysis
-/// can fail (for example, UTF-8 text data can legally contain NULL bytes).
+//! A simple library for fast inspection of binary buffers to guess/determine the type of content.
+//!
+//! This is mainly intended to quickly determine whether a given buffer contains "binary" or "text"
+//! data. The analysis is based on a very simple heuristic: Detection of special [byte order
+//! marks](https://en.wikipedia.org/wiki/Byte_order_mark) and searching for NULL bytes. Note that
+//! this analysis can fail. For example, even if unlikely, UTF-8-encoded text can legally contain
+//! NULL bytes. Also, for performance reasons, only the first *1024* bytes are checked for the
+//! NULL-byte (if no BOM) is detected.
+
 extern crate memchr;
 
 use memchr::memchr;
@@ -11,25 +15,40 @@ use std::fmt;
 
 const MAX_SCAN_SIZE: usize = 1024;
 
-/// Detected encoding for "text" data or `BINARY` for "binary" data.
+/// The type of encoding that was detected (for "text" data) or `BINARY` for "binary" data.
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum ContentType {
+    /// "binary" data
     BINARY,
+
+    /// UTF-8 encoded "text" data
     UTF_8,
+
+    /// UTF-8 encoded "text" data with a byte order mark.
     UTF_8_BOM,
+
+    /// UTF-16 encoded "text" data (little endian)
     UTF_16LE,
+
+    /// UTF-16 encoded "text" data (big endian)
     UTF_16BE,
+
+    /// UTF-32 encoded "text" data (little endian)
     UTF_32LE,
+
+    /// UTF-32 encoded "text" data (big endian)
     UTF_32BE,
 }
 
 impl ContentType {
+    /// Returns `true`, if the `ContentType` is `BINARY`.
     pub fn is_binary(self) -> bool {
         self == ContentType::BINARY
     }
 
-    pub fn is_printable(self) -> bool {
+    /// Returns `true`, if the `ContentType` is __not__ `BINARY`.
+    pub fn is_text(self) -> bool {
         !self.is_binary()
     }
 }
@@ -65,15 +84,18 @@ static BYTE_ORDER_MARKS: &[(&[u8], ContentType)] = &[
 /// PDF header
 static MAGIC_NUMBER_PDF: &[u8] = b"%PDF";
 
-/// Try to determine (guess) the type of content in the given buffer. If the buffer is empty, the
-/// content type will be reported as UTF-8. See documentation of the crate for more information
-/// about how the analysis is done.
+/// Try to determine (or rather: guess) the type of content in the given buffer. See the
+/// documentation of the crate for more information about how the analysis is done.
+///
+/// If the buffer is empty, the content type will be reported as `UTF_8`.
 ///
 /// ```rust
 /// use content_inspector::{ContentType, inspect};
 ///
 /// assert_eq!(ContentType::UTF_8, inspect(b"Hello"));
 /// assert_eq!(ContentType::BINARY, inspect(b"\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00"));
+///
+/// assert!(inspect(b"Hello").is_text());
 /// ```
 pub fn inspect(buffer: &[u8]) -> ContentType {
     use ContentType::*;
@@ -168,5 +190,16 @@ mod tests {
     #[test]
     fn test_pdf() {
         assert_eq!(BINARY, inspect(include_bytes!("../testdata/test.pdf")));
+    }
+
+    #[test]
+    fn test_is_text() {
+        assert!(UTF_8.is_text());
+        assert!(UTF_32LE.is_text());
+    }
+
+    #[test]
+    fn test_is_binary() {
+        assert!(BINARY.is_binary());
     }
 }
