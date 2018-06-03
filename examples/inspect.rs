@@ -2,6 +2,7 @@ extern crate content_inspector;
 
 use std::env;
 use std::fs::File;
+use std::path::Path;
 use std::io::{Error, Read};
 use std::process::exit;
 
@@ -18,6 +19,10 @@ fn main() -> Result<(), Error> {
     args.next();
 
     for filename in args {
+        if !Path::new(&filename).is_file() {
+            continue;
+        }
+
         let mut file = File::open(&filename)?;
         let mut buffer = [0; MAX_PEEK_SIZE];
 
