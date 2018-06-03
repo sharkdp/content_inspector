@@ -22,3 +22,27 @@ assert_eq!(ContentType::BINARY, inspect(b"\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00")
 
 assert!(inspect(b"Hello").is_text());
 ```
+
+## CLI example
+
+This crate also comes with a small example command-line program (see [`examples/inspect.rs`](examples/inspect.rs)) that demonstrates the usage:
+```
+> inspect
+USAGE: inspect FILE [FILE...]
+
+> inspect testdata/*
+testdata/create_text_files.py: UTF-8
+testdata/file_sources.md: UTF-8
+testdata/test.jpg: binary
+testdata/test.pdf: binary
+testdata/test.png: binary
+testdata/text_UTF-16BE-BOM.txt: UTF-16BE
+testdata/text_UTF-16LE-BOM.txt: UTF-16LE
+testdata/text_UTF-32BE-BOM.txt: UTF-32BE
+testdata/text_UTF-32LE-BOM.txt: UTF-32LE
+testdata/text_UTF-8-BOM.txt: UTF-8-BOM
+testdata/text_UTF-8.txt: UTF-8
+> 
+```
+
+If you only want to detect whether something is a binary or text file, this is about a factor of 250 faster than `file --mime ...`.
