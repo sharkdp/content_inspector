@@ -100,9 +100,9 @@ static MAGIC_NUMBER_PDF: &[u8] = b"%PDF";
 pub fn inspect(buffer: &[u8]) -> ContentType {
     use ContentType::*;
 
-    for (bom, content_type) in BYTE_ORDER_MARKS {
+    for &(bom, content_type) in BYTE_ORDER_MARKS {
         if buffer.starts_with(bom) {
-            return *content_type;
+            return content_type;
         }
     }
 
