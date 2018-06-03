@@ -1,6 +1,19 @@
 [package]
 name = "content_inspector"
+description = "Fast inspection of binary buffers to guess/determine the encoding"
+categories = ["encoding"]
+homepage = "https://github.com/sharkdp/content_inspector"
+repository = "https://github.com/sharkdp/content_inspector"
+keywords = [
+    "unicode",
+    "encoding",
+    "binary",
+    "text",
+    "library",
+]
+license = "MIT/Apache-2.0"
 version = "0.1.0"
+readme = "README.md"
 authors = ["David Peter <mail@david-peter.de>"]
 
 [dependencies]
