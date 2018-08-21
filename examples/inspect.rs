@@ -2,8 +2,8 @@ extern crate content_inspector;
 
 use std::env;
 use std::fs::File;
-use std::path::Path;
 use std::io::{Error, Read};
+use std::path::Path;
 use std::process::exit;
 
 const MAX_PEEK_SIZE: usize = 1024;

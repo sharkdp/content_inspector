@@ -1,11 +1,30 @@
-//! A simple library for fast inspection of binary buffers to guess/determine the type of content.
+//! A simple library for *fast* inspection of binary buffers to guess the type of content.
 //!
-//! This is mainly intended to quickly determine whether a given buffer contains "binary" or "text"
-//! data. The analysis is based on a very simple heuristic: Detection of special [byte order
-//! marks](https://en.wikipedia.org/wiki/Byte_order_mark) and searching for NULL bytes. Note that
-//! this analysis can fail. For example, even if unlikely, UTF-8-encoded text can legally contain
-//! NULL bytes. Also, for performance reasons, only the first *1024* bytes are checked for the
-//! NULL-byte (if no BOM) is detected.
+//! This is mainly intended to quickly determine whether a given buffer contains "binary"
+//! or "text" data. Programs like `grep` or `git diff` use similar mechanisms to decide whether
+//! to treat some files as "binary data" or not.
+//!
+//! The analysis is based on a very simple heuristic: Searching for NULL bytes
+//! (indicating "binary" content) and the detection of special [byte order
+//! marks](https://en.wikipedia.org/wiki/Byte_order_mark) (indicating a particular kind of textual
+//! encoding). Note that **this analysis can fail**. For example, even if unlikely, UTF-8-encoded
+//! text can legally contain NULL bytes. Conversely, some particular binary formats (like binary
+//! [PGM](https://en.wikipedia.org/wiki/Netpbm_format)) may not contain NULL bytes. Also, for
+//! performance reasons, only the first 1024 bytes are checked for the NULL-byte (if no BOM was
+//! detected).
+//!
+//! If this library reports a certain type of encoding (say `UTF_16LE`), there is **no guarantee**
+//! that the binary buffer can *actually* be decoded as UTF-16LE.
+//!
+//! # Example
+//! ```
+//! use content_inspector::{ContentType, inspect};
+//!
+//! assert_eq!(ContentType::UTF_8, inspect(b"Hello"));
+//! assert_eq!(ContentType::BINARY, inspect(b"\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00"));
+//!
+//! assert!(inspect(b"Hello").is_text());
+//! ```
 
 extern crate memchr;
 
@@ -84,19 +103,10 @@ static BYTE_ORDER_MARKS: &[(&[u8], ContentType)] = &[
 /// PDF header
 static MAGIC_NUMBER_PDF: &[u8] = b"%PDF";
 
-/// Try to determine (or rather: guess) the type of content in the given buffer. See the
-/// documentation of the crate for more information about how the analysis is done.
+/// Try to determine the type of content in the given buffer. See the crate documentation for a
+/// usage example and for more details on how this analysis is performed.
 ///
 /// If the buffer is empty, the content type will be reported as `UTF_8`.
-///
-/// ```rust
-/// use content_inspector::{ContentType, inspect};
-///
-/// assert_eq!(ContentType::UTF_8, inspect(b"Hello"));
-/// assert_eq!(ContentType::BINARY, inspect(b"\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00"));
-///
-/// assert!(inspect(b"Hello").is_text());
-/// ```
 pub fn inspect(buffer: &[u8]) -> ContentType {
     use ContentType::*;
 
@@ -142,7 +152,10 @@ mod tests {
 
     #[test]
     fn test_text_utf8_bom() {
-        assert_eq!(UTF_8_BOM, inspect(include_bytes!("../testdata/text_UTF-8-BOM.txt")));
+        assert_eq!(
+            UTF_8_BOM,
+            inspect(include_bytes!("../testdata/text_UTF-8-BOM.txt"))
+        );
     }
 
     #[test]

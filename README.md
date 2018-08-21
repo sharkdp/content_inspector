@@ -3,14 +3,20 @@
 [![Crates.io](https://img.shields.io/crates/v/content_inspector.svg)](https://crates.io/crates/content_inspector)
 [![Documentation](https://docs.rs/content_inspector/badge.svg)](https://docs.rs/content_inspector)
 
-A simple library for fast inspection of binary buffers to guess/determine the type of content.
+A simple library for *fast* inspection of binary buffers to guess the type of content.
 
-This is mainly intended to quickly determine whether a given buffer contains "binary" or "text"
-data. The analysis is based on a very simple heuristic: Detection of special [byte order
-marks](https://en.wikipedia.org/wiki/Byte_order_mark) and searching for NULL bytes. Note that
-this analysis can fail. For example, even if unlikely, UTF-8-encoded text can legally contain
-NULL bytes. Also, for performance reasons, only the first *1024* bytes are checked for the
-NULL-byte (if no BOM) is detected.
+This is mainly intended to quickly determine whether a given buffer contains "binary"
+or "text" data. Programs like `grep` or `git diff` use similar mechanisms to decide whether
+to treat some files as "binary data" or not.
+
+The analysis is based on a very simple heuristic: Searching for NULL bytes
+(indicating "binary" content) and the detection of special [byte order
+marks](https://en.wikipedia.org/wiki/Byte_order_mark) (indicating a particular kind of textual
+encoding). Note that **this analysis can fail**. For example, even if unlikely, UTF-8-encoded
+text can legally contain NULL bytes. Conversely, some particular binary formats (like binary
+[PGM](https://en.wikipedia.org/wiki/Netpbm_format)) may not contain NULL bytes. Also, for
+performance reasons, only the first 1024 bytes are checked for the NULL-byte (if no BOM was
+detected).
 
 ## Usage
 
