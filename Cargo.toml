@@ -12,7 +12,7 @@ keywords = [
     "library",
 ]
 license = "MIT/Apache-2.0"
-version = "0.2.1"
+version = "0.2.2"
 readme = "README.md"
 authors = ["David Peter <mail@david-peter.de>"]
 
