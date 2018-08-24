@@ -3,7 +3,7 @@
 [![Crates.io](https://img.shields.io/crates/v/content_inspector.svg)](https://crates.io/crates/content_inspector)
 [![Documentation](https://docs.rs/content_inspector/badge.svg)](https://docs.rs/content_inspector)
 
-A simple library for *fast* inspection of binary buffers to guess the type of content.
+A simple library for **fast** inspection of binary buffers to **guess** the type of content.
 
 This is mainly intended to quickly determine whether a given buffer contains "binary"
 or "text" data. Programs like `grep` or `git diff` use similar mechanisms to decide whether
