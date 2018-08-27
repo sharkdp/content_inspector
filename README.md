@@ -18,6 +18,9 @@ text can legally contain NULL bytes. Conversely, some particular binary formats 
 performance reasons, only the first 1024 bytes are checked for the NULL-byte (if no BOM was
 detected).
 
+If this library reports a certain type of encoding (say `UTF_16LE`), there is **no guarantee** that
+the binary buffer can actually be decoded as UTF-16LE.
+
 ## Usage
 
 ```rust
