@@ -23,12 +23,12 @@ fn main() -> Result<(), Error> {
             continue;
         }
 
-        let mut file = File::open(&filename)?;
-        let mut buffer = [0; MAX_PEEK_SIZE];
+        let file = File::open(&filename)?;
+        let mut buffer: Vec<u8> = vec![];
 
-        let length = file.read(&mut buffer[..])?;
+        file.take(MAX_PEEK_SIZE as u64).read_to_end(&mut buffer)?;
 
-        let content_type = content_inspector::inspect(&buffer[0..length]);
+        let content_type = content_inspector::inspect(&buffer);
         println!("{}: {}", filename, content_type);
     }
 
