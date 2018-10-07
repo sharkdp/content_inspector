@@ -100,8 +100,8 @@ static BYTE_ORDER_MARKS: &[(&[u8], ContentType)] = &[
     (&[0xFF, 0xFE], ContentType::UTF_16LE),
 ];
 
-/// PDF header
-static MAGIC_NUMBER_PDF: &[u8] = b"%PDF";
+/// Magic numbers for some filetypes that could otherwise be characterized as text.
+static MAGIC_NUMBERS: [&[u8]; 2] = [b"%PDF", b"\x89PNG"];
 
 /// Try to determine the type of content in the given buffer. See the crate documentation for a
 /// usage example and for more details on how this analysis is performed.
@@ -124,7 +124,7 @@ pub fn inspect(buffer: &[u8]) -> ContentType {
         return BINARY;
     }
 
-    if buffer.starts_with(MAGIC_NUMBER_PDF) {
+    if MAGIC_NUMBERS.iter().any(|magic| buffer.starts_with(magic)) {
         return BINARY;
     }
 
