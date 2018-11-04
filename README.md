@@ -54,3 +54,12 @@ testdata/text_UTF-8.txt: UTF-8
 ```
 
 If you only want to detect whether something is a binary or text file, this is about a factor of 250 faster than `file --mime ...`.
+
+## License
+
+Licensed under either of
+
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
