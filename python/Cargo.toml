@@ -1,0 +1,22 @@
+[package]
+name = "content_inspector_py"
+version = "0.1.0"
+edition = "2021"
+description = "Fast inspection of binary buffers to guess/determine the encoding"
+license = "MIT/Apache-2.0"
+publish = false
+
+[lib]
+name = "content_inspector_py"
+crate-type = ["cdylib"]
+
+[dependencies]
+content_inspector = { path = ".." }
+pyo3 = { version = "0.29", features = ["extension-module", "abi3-py310"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+
+# Keep this crate out of any enclosing workspace so the main crate is unaffected.
+[workspace]
